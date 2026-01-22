@@ -1,3 +1,6 @@
+# Docker Compose for Void Server Deployment (via Tailscale)
+# Usage: docker compose -f docker-compose.void.yml up -d --build
+
 services:
   app:
     build:
@@ -8,8 +11,8 @@ services:
     ports:
       - "3100:3000"
     environment:
-      - DATABASE_URL=postgresql://drizzle:${DB_PASSWORD:-drizzle_secure_password}@db:5432/drizzle
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://homelab:3100}
+      - DATABASE_URL=postgresql://drizzle:${DB_PASSWORD}@db:5432/drizzle
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://void.tail517c12.ts.net:8443}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
     depends_on:
       db:
@@ -19,7 +22,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 30s
     networks:
       - drizzle-network
 
@@ -29,10 +32,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: drizzle
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-drizzle_secure_password}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: drizzle
-    ports:
-      - "5435:5432"
     volumes:
       - drizzle_postgres_data:/var/lib/postgresql/data
     healthcheck:

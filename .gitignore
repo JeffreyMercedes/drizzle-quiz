@@ -39,7 +39,7 @@ yarn-error.log*
 
 # Keep example files
 !.env.example
-!.env.homelab.example
+!.env.void.example
 
 # vercel
 .vercel

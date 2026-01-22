@@ -19,7 +19,7 @@ interface ExtractedQuestion {
   source_type: string;
 }
 
-export async function seedQuestions(): Promise<void> {
+export async function seedQuestions(forceReseed = false): Promise<void> {
   console.log("Seeding questions...");
 
   // Path to extracted questions
@@ -47,9 +47,17 @@ export async function seedQuestions(): Promise<void> {
   // Check if questions already exist
   const existingCount = await prisma.question.count();
   if (existingCount > 0) {
-    console.log(`Database already has ${existingCount} questions. Skipping seed.`);
-    console.log("To re-seed, delete existing questions first.");
-    return;
+    if (forceReseed) {
+      console.log(`Force reseed: deleting ${existingCount} existing questions...`);
+      // Delete answers first due to foreign key constraints
+      await prisma.quizAnswer.deleteMany({});
+      await prisma.question.deleteMany({});
+      console.log("Existing questions deleted.");
+    } else {
+      console.log(`Database already has ${existingCount} questions. Skipping seed.`);
+      console.log("To re-seed, use --force or call seedQuestions(true).");
+      return;
+    }
   }
 
   // Transform and insert questions
@@ -96,7 +104,8 @@ export async function seedQuestions(): Promise<void> {
 
 // Run if called directly
 if (require.main === module) {
-  seedQuestions()
+  const forceReseed = process.argv.includes("--force");
+  seedQuestions(forceReseed)
     .then(() => prisma.$disconnect())
     .catch((e) => {
       console.error(e);

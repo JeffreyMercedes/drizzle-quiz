@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 
 interface QuizTimerProps {
   totalSeconds: number;
@@ -37,10 +37,10 @@ export function QuizTimer({ totalSeconds, onTimeUp, isPaused = false }: QuizTime
   const percentageRemaining = remainingSeconds / totalSeconds;
 
   const getTimerColor = (): string => {
-    if (percentageRemaining <= WARNING_THRESHOLDS.FIVE_PERCENT) return "text-red-600";
-    if (percentageRemaining <= WARNING_THRESHOLDS.TEN_PERCENT) return "text-red-500";
-    if (percentageRemaining <= WARNING_THRESHOLDS.QUARTER) return "text-orange-500";
-    return "text-gray-900";
+    if (percentageRemaining <= WARNING_THRESHOLDS.FIVE_PERCENT) return "text-red-600 dark:text-red-400";
+    if (percentageRemaining <= WARNING_THRESHOLDS.TEN_PERCENT) return "text-red-500 dark:text-red-400";
+    if (percentageRemaining <= WARNING_THRESHOLDS.QUARTER) return "text-orange-500 dark:text-orange-400";
+    return "text-gray-900 dark:text-gray-100";
   };
 
   const getProgressColor = (): string => {
@@ -65,7 +65,7 @@ export function QuizTimer({ totalSeconds, onTimeUp, isPaused = false }: QuizTime
   return (
     <div className="flex items-center gap-4">
       {/* Visual Timer Bar */}
-      <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+      <div className="flex-1 h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <div
           className={`h-full ${getProgressColor()} transition-all duration-1000 ease-linear rounded-full`}
           style={{ width: `${percentageRemaining * 100}%` }}
@@ -120,10 +120,10 @@ export function CompactTimer({ totalSeconds, onTimeUp, isPaused = false }: QuizT
   const percentageRemaining = remainingSeconds / totalSeconds;
 
   const getTimerColor = (): string => {
-    if (percentageRemaining <= WARNING_THRESHOLDS.FIVE_PERCENT) return "text-red-600 bg-red-50";
-    if (percentageRemaining <= WARNING_THRESHOLDS.TEN_PERCENT) return "text-red-500 bg-red-50";
-    if (percentageRemaining <= WARNING_THRESHOLDS.QUARTER) return "text-orange-600 bg-orange-50";
-    return "text-gray-700 bg-gray-100";
+    if (percentageRemaining <= WARNING_THRESHOLDS.FIVE_PERCENT) return "text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/30";
+    if (percentageRemaining <= WARNING_THRESHOLDS.TEN_PERCENT) return "text-red-500 bg-red-50 dark:text-red-400 dark:bg-red-900/30";
+    if (percentageRemaining <= WARNING_THRESHOLDS.QUARTER) return "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/30";
+    return "text-gray-700 bg-gray-100 dark:text-gray-300 dark:bg-gray-800";
   };
 
   const formatTime = (seconds: number): string => {

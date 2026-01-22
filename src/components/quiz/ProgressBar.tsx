@@ -12,14 +12,14 @@ export function ProgressBar({ current, total, showPercentage = false }: Progress
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 dark:text-gray-400">
           {current} of {total} completed
         </span>
         {showPercentage && (
-          <span className="text-sm font-medium text-gray-900">{percentage}%</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{percentage}%</span>
         )}
       </div>
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <div
           className="h-full bg-blue-500 rounded-full transition-all duration-300 ease-out"
           style={{ width: `${percentage}%` }}

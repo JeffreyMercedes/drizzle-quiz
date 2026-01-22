@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 interface Option {
   label: string;
   text: string;
@@ -34,23 +32,23 @@ export function QuestionCard({
 }: QuestionCardProps) {
   const getOptionStyles = (label: string): string => {
     const baseStyles =
-      "w-full min-h-[48px] p-4 text-left rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
+      "w-full min-h-[48px] p-4 text-left rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900";
 
     if (!showFeedback) {
       if (selectedAnswer === label) {
-        return `${baseStyles} border-blue-500 bg-blue-50 text-blue-900`;
+        return `${baseStyles} border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100`;
       }
-      return `${baseStyles} border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50`;
+      return `${baseStyles} border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100`;
     }
 
     // Feedback mode
     if (label === correctAnswer) {
-      return `${baseStyles} border-green-500 bg-green-50 text-green-900`;
+      return `${baseStyles} border-green-500 bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100`;
     }
     if (selectedAnswer === label && label !== correctAnswer) {
-      return `${baseStyles} border-red-500 bg-red-50 text-red-900`;
+      return `${baseStyles} border-red-500 bg-red-50 dark:bg-red-900/30 text-red-900 dark:text-red-100`;
     }
-    return `${baseStyles} border-gray-200 bg-gray-50 text-gray-500`;
+    return `${baseStyles} border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400`;
   };
 
   const getOptionIcon = (label: string): React.ReactNode => {
@@ -60,7 +58,7 @@ export function QuestionCard({
           className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm ${
             selectedAnswer === label
               ? "border-blue-500 bg-blue-500 text-white"
-              : "border-gray-300 text-gray-600"
+              : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
           }`}
         >
           {label.toUpperCase()}
@@ -88,24 +86,24 @@ export function QuestionCard({
       );
     }
     return (
-      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 text-gray-400 font-semibold text-sm">
+      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 font-semibold text-sm">
         {label.toUpperCase()}
       </span>
     );
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
       {/* Question Header */}
-      <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-        <span className="text-sm font-medium text-gray-500">
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
           Question {questionNumber} of {totalQuestions}
         </span>
       </div>
 
       {/* Question Text */}
       <div className="px-6 py-6">
-        <p className="text-lg text-gray-900 leading-relaxed">{questionText}</p>
+        <p className="text-lg text-gray-900 dark:text-gray-100 leading-relaxed">{questionText}</p>
       </div>
 
       {/* Options */}
@@ -129,9 +127,9 @@ export function QuestionCard({
       {/* Explanation */}
       {showFeedback && explanation && (
         <div className="px-6 pb-6">
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <h4 className="font-semibold text-blue-900 mb-2">Explanation</h4>
-            <p className="text-blue-800 text-sm leading-relaxed">{explanation}</p>
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Explanation</h4>
+            <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">{explanation}</p>
           </div>
         </div>
       )}

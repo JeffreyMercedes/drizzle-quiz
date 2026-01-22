@@ -103,40 +103,40 @@ export default function FlashcardsPage() {
   // Topic Selection Screen
   if (pageState === "selecting") {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b border-gray-200">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-4xl mx-auto px-4 py-4 flex items-center">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 mr-4">
+            <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mr-4">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Flashcards</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Flashcards</h1>
           </div>
         </header>
 
         <main className="max-w-4xl mx-auto px-4 py-8">
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             Choose a topic for your flashcard study session:
           </p>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               onClick={() => handleTopicSelect("all")}
-              className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all text-left"
+              className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all text-left"
             >
-              <h3 className="font-semibold text-gray-900 mb-1">All Topics</h3>
-              <p className="text-sm text-gray-500">Mix of questions from all content areas</p>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">All Topics</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Mix of questions from all content areas</p>
             </button>
 
             {EXAM_CONFIG.contentAreas.map((area) => (
               <button
                 key={area.id}
                 onClick={() => handleTopicSelect(area.id)}
-                className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all text-left"
+                className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all text-left"
               >
-                <h3 className="font-semibold text-gray-900 mb-1">{area.shortName}</h3>
-                <p className="text-sm text-gray-500">{area.name}</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{area.shortName}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{area.name}</p>
               </button>
             ))}
           </div>
@@ -150,7 +150,7 @@ export default function FlashcardsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
-          <p className="text-gray-600">Loading flashcards...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading flashcards...</p>
         </div>
       </div>
     );
@@ -160,7 +160,7 @@ export default function FlashcardsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <div className="flex flex-col gap-3">
             <Button onClick={() => fetchFlashcards(selectedTopic)}>Try Again</Button>
             <Link href="/">
@@ -179,23 +179,23 @@ export default function FlashcardsPage() {
       : EXAM_CONFIG.contentAreas.find((a) => a.id === selectedTopic)?.shortName || selectedTopic;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
+            <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </Link>
             <div className="text-center">
-              <h1 className="font-semibold text-gray-900">Flashcards</h1>
-              <p className="text-xs text-gray-500">{topicName}</p>
+              <h1 className="font-semibold text-gray-900 dark:text-gray-100">Flashcards</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{topicName}</p>
             </div>
             <button
               onClick={handleShuffle}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               title="Shuffle cards"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,7 +234,7 @@ export default function FlashcardsPage() {
             Previous
           </Button>
 
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
             {currentIndex + 1} of {flashcards.length}
           </span>
 
@@ -253,7 +253,7 @@ export default function FlashcardsPage() {
         {/* End of deck message */}
         {currentIndex === flashcards.length - 1 && (
           <div className="mt-8 text-center">
-            <p className="text-gray-600 mb-4">You've reached the end of this deck!</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">You've reached the end of this deck!</p>
             <div className="flex flex-col gap-3">
               <Button onClick={handleRestart}>Start Over</Button>
               <Button variant="ghost" onClick={handleChooseDifferentTopic}>

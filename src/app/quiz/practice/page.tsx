@@ -158,7 +158,7 @@ export default function PracticeQuizPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
-          <p className="text-gray-600">Loading quiz...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading quiz...</p>
         </div>
       </div>
     );
@@ -173,8 +173,8 @@ export default function PracticeQuizPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
           <div className="flex flex-col gap-3">
             <Button onClick={fetchQuestions}>Try Again</Button>
             <Link href="/">
@@ -188,9 +188,9 @@ export default function PracticeQuizPage() {
 
   if (quizState === "results" && results) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
             Practice Quiz Complete
           </h1>
           <QuizResults
@@ -206,17 +206,17 @@ export default function PracticeQuizPage() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
+            <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </Link>
-            <h1 className="font-semibold text-gray-900">Practice Quiz</h1>
+            <h1 className="font-semibold text-gray-900 dark:text-gray-100">Practice Quiz</h1>
             <div className="w-6" /> {/* Spacer for centering */}
           </div>
           <ProgressBar

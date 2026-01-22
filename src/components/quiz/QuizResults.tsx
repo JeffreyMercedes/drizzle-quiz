@@ -46,15 +46,15 @@ export function QuizResults({
   };
 
   const getScoreColor = (scorePercent: number): string => {
-    if (scorePercent >= 80) return "text-green-600";
-    if (scorePercent >= 60) return "text-yellow-600";
-    return "text-red-600";
+    if (scorePercent >= 80) return "text-green-600 dark:text-green-400";
+    if (scorePercent >= 60) return "text-yellow-600 dark:text-yellow-400";
+    return "text-red-600 dark:text-red-400";
   };
 
   const getScoreBgColor = (scorePercent: number): string => {
-    if (scorePercent >= 80) return "bg-green-50 border-green-200";
-    if (scorePercent >= 60) return "bg-yellow-50 border-yellow-200";
-    return "bg-red-50 border-red-200";
+    if (scorePercent >= 80) return "bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700";
+    if (scorePercent >= 60) return "bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-700";
+    return "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700";
   };
 
   const getDomainName = (domainId: string): string => {
@@ -76,17 +76,17 @@ export function QuizResults({
       <div
         className={`rounded-xl border-2 p-8 mb-6 text-center ${getScoreBgColor(score)}`}
       >
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
           {isPassing ? "Great Work!" : "Keep Practicing!"}
         </h2>
         <div className={`text-6xl font-bold ${getScoreColor(score)} mb-2`}>
           {Math.round(score)}%
         </div>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           {correctCount} of {totalQuestions} correct
         </p>
         {timeSpent && (
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Completed in {formatTime(timeSpent)}
           </p>
         )}
@@ -94,20 +94,20 @@ export function QuizResults({
 
       {/* Performance by Domain */}
       {Object.keys(byDomain).length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Performance by Domain</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Performance by Domain</h3>
           <div className="space-y-4">
             {Object.entries(byDomain)
               .sort((a, b) => a[1].percentage - b[1].percentage)
               .map(([domainId, result]) => (
                 <div key={domainId}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-700">{getDomainName(domainId)}</span>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{getDomainName(domainId)}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {result.correct}/{result.total} ({Math.round(result.percentage)}%)
                     </span>
                   </div>
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${getDomainBarColor(result.percentage)} rounded-full transition-all duration-300`}
                       style={{ width: `${result.percentage}%` }}

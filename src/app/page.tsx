@@ -3,6 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { QUIZ_MODES, EXAM_CONFIG } from "@/lib/exam-config";
 
 const STUDY_MODES = [
@@ -64,7 +65,7 @@ function StudyModeCard({
   return (
     <Link
       href={href}
-      className="block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+      className="block p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
     >
       <div className="flex items-start gap-4">
         <div className={`p-3 rounded-lg ${color}`}>
@@ -83,8 +84,8 @@ function StudyModeCard({
           </svg>
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">{title}</h3>
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
         </div>
       </div>
     </Link>
@@ -105,10 +106,13 @@ export default function HomePage() {
   if (!session) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="text-center max-w-md">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Drizzle</h1>
-          <p className="text-xl text-gray-600 mb-8">CPCE Exam Prep</p>
-          <p className="text-gray-500 mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">Drizzle</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">CPCE Exam Prep</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">
             Master the Counselor Preparation Comprehensive Examination with
             practice questions, timed simulations, and detailed explanations.
           </p>
@@ -130,19 +134,20 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Drizzle</h1>
-            <p className="text-sm text-gray-500">CPCE Exam Prep</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Drizzle</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">CPCE Exam Prep</p>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">
+            <ThemeToggle />
+            <Link href="/dashboard" className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
               Dashboard
             </Link>
             <button
               onClick={() => signOut()}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
             >
               Sign Out
             </button>
@@ -153,10 +158,10 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Welcome back{session.user.name ? `, ${session.user.name}` : ""}!
           </h2>
-          <p className="text-gray-600">Choose a study mode to get started.</p>
+          <p className="text-gray-600 dark:text-gray-400">Choose a study mode to get started.</p>
         </div>
 
         {/* Study Modes Grid */}
@@ -167,32 +172,32 @@ export default function HomePage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="mt-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-900 mb-4">Exam Info</h3>
+        <div className="mt-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Exam Info</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {EXAM_CONFIG.format.totalQuestions}
               </p>
-              <p className="text-xs text-gray-500">Total Questions</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Questions</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {EXAM_CONFIG.format.scoredQuestions}
               </p>
-              <p className="text-xs text-gray-500">Scored Questions</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Scored Questions</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {EXAM_CONFIG.timing.timeLimitMinutes}
               </p>
-              <p className="text-xs text-gray-500">Minutes</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Minutes</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {EXAM_CONFIG.contentAreas.length}
               </p>
-              <p className="text-xs text-gray-500">Content Areas</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Content Areas</p>
             </div>
           </div>
         </div>

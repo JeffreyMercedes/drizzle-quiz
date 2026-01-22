@@ -17,9 +17,14 @@ export async function GET() {
       where: { userId },
     });
 
-    // Get recent quiz sessions
+    // Get recent quiz sessions (only those with at least one answer)
     const recentSessions = await prisma.quizSession.findMany({
-      where: { userId },
+      where: {
+        userId,
+        answers: {
+          some: {}, // At least one answer exists
+        },
+      },
       orderBy: { startedAt: "desc" },
       take: 10,
       select: {
@@ -31,6 +36,9 @@ export async function GET() {
         correctCount: true,
         sectionFilter: true,
         timeSpent: true,
+        _count: {
+          select: { answers: true },
+        },
       },
     });
 
