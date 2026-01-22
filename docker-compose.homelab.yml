@@ -1,0 +1,51 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: drizzle-app
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      - DATABASE_URL=postgresql://drizzle:${DB_PASSWORD:-drizzle_secure_password}@db:5432/drizzle
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://homelab:3100}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - drizzle-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: drizzle-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: drizzle
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-drizzle_secure_password}
+      POSTGRES_DB: drizzle
+    ports:
+      - "5435:5432"
+    volumes:
+      - drizzle_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drizzle -d drizzle"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - drizzle-network
+
+volumes:
+  drizzle_postgres_data:
+
+networks:
+  drizzle-network:
+    driver: bridge

@@ -1,0 +1,86 @@
+// Prisma schema for Drizzle - CPCE Quiz Application
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     QuizSession[]
+  stats        UserStats?
+}
+
+model Question {
+  id              String       @id @default(cuid())
+  questionText    String
+  options         Json         // [{label: "a", text: "..."}, ...]
+  correctAnswer   String       // a, b, c, or d
+  explanation     String       @db.Text
+  chapter         String
+  section         String       @default("")
+  topic           String       // CPCE content area ID
+  pageNumber      Int
+  questionNumber  Int
+  isAiGenerated   Boolean      @default(false)
+  sourceType      String       @default("book")
+  confidenceScore Float?       // For AI-generated questions only
+  sourceCitations Json?        // For AI-generated questions only
+  createdAt       DateTime     @default(now())
+  answers         QuizAnswer[]
+
+  @@index([topic])
+  @@index([chapter])
+  @@index([isAiGenerated])
+}
+
+model QuizSession {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mode           String       // practice, simulation, section, quizplus
+  startedAt      DateTime     @default(now())
+  completedAt    DateTime?
+  totalQuestions Int
+  correctCount   Int          @default(0)
+  sectionFilter  String?      // For section-specific quizzes
+  timeSpent      Int?         // Total time in seconds
+  answers        QuizAnswer[]
+
+  @@index([userId])
+  @@index([mode])
+}
+
+model QuizAnswer {
+  id             String      @id @default(cuid())
+  sessionId      String
+  session        QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId     String
+  question       Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedAnswer String      // a, b, c, or d
+  isCorrect      Boolean
+  timeSpent      Int?        // Time spent on this question in seconds
+  answeredAt     DateTime    @default(now())
+
+  @@index([sessionId])
+  @@index([questionId])
+}
+
+model UserStats {
+  id                     String    @id @default(cuid())
+  userId                 String    @unique
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalQuestionsAnswered Int       @default(0)
+  totalCorrect           Int       @default(0)
+  statsByDomain          Json      @default("{}") // {topic_id: {attempted: n, correct: n}}
+  lastStudiedAt          DateTime?
+}

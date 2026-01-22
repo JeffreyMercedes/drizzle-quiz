@@ -1,63 +1,200 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { QUIZ_MODES, EXAM_CONFIG } from "@/lib/exam-config";
+
+const STUDY_MODES = [
+  {
+    id: "practice",
+    title: QUIZ_MODES.practice.name,
+    description: QUIZ_MODES.practice.description,
+    icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
+    href: "/quiz/practice",
+    color: "bg-blue-500",
+  },
+  {
+    id: "section",
+    title: QUIZ_MODES.section.name,
+    description: QUIZ_MODES.section.description,
+    icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
+    href: "/quiz/section",
+    color: "bg-green-500",
+  },
+  {
+    id: "simulation",
+    title: QUIZ_MODES.simulation.name,
+    description: `${EXAM_CONFIG.format.totalQuestions} questions, ${EXAM_CONFIG.timing.timeLimitMinutes} minutes`,
+    icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+    href: "/quiz/simulation",
+    color: "bg-purple-500",
+  },
+  {
+    id: "flashcards",
+    title: "Flashcard Mode",
+    description: "Swipe through Q&A cards",
+    icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
+    href: "/flashcards",
+    color: "bg-orange-500",
+  },
+  {
+    id: "review",
+    title: "Review Mode",
+    description: "Browse all questions and explanations",
+    icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253",
+    href: "/review",
+    color: "bg-teal-500",
+  },
+];
+
+function StudyModeCard({
+  title,
+  description,
+  icon,
+  href,
+  color,
+}: {
+  title: string;
+  description: string;
+  icon: string;
+  href: string;
+  color: string;
+}) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Link
+      href={href}
+      className="block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+    >
+      <div className="flex items-start gap-4">
+        <div className={`p-3 rounded-lg ${color}`}>
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d={icon}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </svg>
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900">{title}</h3>
+          <p className="mt-1 text-sm text-gray-500">{description}</p>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export default function HomePage() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Drizzle</h1>
+          <p className="text-xl text-gray-600 mb-8">CPCE Exam Prep</p>
+          <p className="text-gray-500 mb-8">
+            Master the Counselor Preparation Comprehensive Examination with
+            practice questions, timed simulations, and detailed explanations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/login">
+              <Button size="lg">Sign In</Button>
+            </Link>
+            <Link href="/register">
+              <Button size="lg" variant="outline">
+                Create Account
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Drizzle</h1>
+            <p className="text-sm text-gray-500">CPCE Exam Prep</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">
+              Dashboard
+            </Link>
+            <button
+              onClick={() => signOut()}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Welcome back{session.user.name ? `, ${session.user.name}` : ""}!
+          </h2>
+          <p className="text-gray-600">Choose a study mode to get started.</p>
+        </div>
+
+        {/* Study Modes Grid */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {STUDY_MODES.map((mode) => (
+            <StudyModeCard key={mode.id} {...mode} />
+          ))}
+        </div>
+
+        {/* Quick Stats */}
+        <div className="mt-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+          <h3 className="font-semibold text-gray-900 mb-4">Exam Info</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-blue-600">
+                {EXAM_CONFIG.format.totalQuestions}
+              </p>
+              <p className="text-xs text-gray-500">Total Questions</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-blue-600">
+                {EXAM_CONFIG.format.scoredQuestions}
+              </p>
+              <p className="text-xs text-gray-500">Scored Questions</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-blue-600">
+                {EXAM_CONFIG.timing.timeLimitMinutes}
+              </p>
+              <p className="text-xs text-gray-500">Minutes</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-blue-600">
+                {EXAM_CONFIG.contentAreas.length}
+              </p>
+              <p className="text-xs text-gray-500">Content Areas</p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
