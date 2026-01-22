@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         options: true,
         correctAnswer: true,
         explanation: true,
+        flashcardExplanation: true,
         topic: true,
         chapter: true,
       },
@@ -57,7 +58,8 @@ export async function GET(request: Request) {
         id: q.id,
         front: q.questionText,
         back: correctOption?.text || q.correctAnswer,
-        explanation: q.explanation,
+        // Use flashcard-specific explanation if available, otherwise fall back to regular explanation
+        explanation: q.flashcardExplanation || q.explanation,
         topic: q.topic,
         chapter: q.chapter,
         options,

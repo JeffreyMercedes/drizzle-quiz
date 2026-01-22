@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 interface Option {
   label: string;
   text: string;
@@ -30,6 +32,13 @@ export function QuestionCard({
   explanation,
   disabled = false,
 }: QuestionCardProps) {
+  const [showExplanation, setShowExplanation] = useState(false);
+
+  // Reset explanation visibility when question changes
+  useEffect(() => {
+    setShowExplanation(false);
+  }, [questionNumber]);
+
   const getOptionStyles = (label: string): string => {
     const baseStyles =
       "w-full min-h-[48px] p-4 text-left rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900";
@@ -127,10 +136,27 @@ export function QuestionCard({
       {/* Explanation */}
       {showFeedback && explanation && (
         <div className="px-6 pb-6">
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Explanation</h4>
-            <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">{explanation}</p>
-          </div>
+          {showExplanation ? (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-blue-900 dark:text-blue-300">Explanation</h4>
+                <button
+                  onClick={() => setShowExplanation(false)}
+                  className="text-blue-600 dark:text-blue-400 text-sm hover:underline"
+                >
+                  Hide
+                </button>
+              </div>
+              <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">{explanation}</p>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowExplanation(true)}
+              className="w-full p-3 text-center text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+            >
+              Show Explanation
+            </button>
+          )}
         </div>
       )}
     </div>

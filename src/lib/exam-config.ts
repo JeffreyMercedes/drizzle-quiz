@@ -83,8 +83,8 @@ export type ContentAreaId = (typeof EXAM_CONFIG.contentAreas)[number]["id"];
 export const QUIZ_MODES = {
   practice: {
     name: "Practice Quiz",
-    description: "10-20 random questions from all areas",
-    defaultQuestionCount: 15,
+    description: "Random questions from all content areas",
+    defaultQuestionCount: 20,
     timed: false,
   },
   section: {

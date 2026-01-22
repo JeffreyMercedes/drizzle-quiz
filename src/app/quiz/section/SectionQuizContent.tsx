@@ -7,8 +7,9 @@ import Link from "next/link";
 import { QuestionCard } from "@/components/quiz/QuestionCard";
 import { ProgressBar } from "@/components/quiz/ProgressBar";
 import { QuizResults } from "@/components/quiz/QuizResults";
+import { QuestionCountSelector } from "@/components/quiz/QuestionCountSelector";
 import { Button } from "@/components/ui/Button";
-import { EXAM_CONFIG, ContentAreaId } from "@/lib/exam-config";
+import { EXAM_CONFIG, ContentAreaId, QUIZ_MODES } from "@/lib/exam-config";
 
 interface Question {
   id: string;
@@ -32,7 +33,7 @@ interface QuizResult {
   byDomain: Record<string, { total: number; correct: number; percentage: number }>;
 }
 
-type QuizState = "selecting" | "loading" | "quiz" | "results" | "error";
+type QuizState = "selecting" | "configuring" | "loading" | "quiz" | "results" | "error";
 
 export function SectionQuizContent() {
   const { data: session, status } = useSession();
@@ -41,6 +42,7 @@ export function SectionQuizContent() {
 
   const [quizState, setQuizState] = useState<QuizState>("selecting");
   const [selectedTopic, setSelectedTopic] = useState<ContentAreaId | null>(null);
+  const [questionCount, setQuestionCount] = useState<number>(QUIZ_MODES.section.defaultQuestionCount);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -63,15 +65,15 @@ export function SectionQuizContent() {
     const topicParam = searchParams.get("topic") as ContentAreaId;
     if (topicParam && EXAM_CONFIG.contentAreas.some((a) => a.id === topicParam)) {
       setSelectedTopic(topicParam);
-      fetchQuestions(topicParam);
+      setQuizState("configuring");
     }
   }, [searchParams]);
 
-  const fetchQuestions = async (topic: ContentAreaId) => {
+  const fetchQuestions = async (topic: ContentAreaId, count: number) => {
     try {
       setQuizState("loading");
       setStartTime(Date.now());
-      const response = await fetch(`/api/quiz/section?topic=${topic}`);
+      const response = await fetch(`/api/quiz/section?topic=${topic}&count=${count}`);
       if (!response.ok) {
         throw new Error("Failed to fetch questions");
       }
@@ -87,7 +89,13 @@ export function SectionQuizContent() {
 
   const handleTopicSelect = (topic: ContentAreaId) => {
     setSelectedTopic(topic);
-    fetchQuestions(topic);
+    setQuizState("configuring");
+  };
+
+  const handleStartQuiz = () => {
+    if (selectedTopic) {
+      fetchQuestions(selectedTopic, questionCount);
+    }
   };
 
   const handleSelectAnswer = (answer: string) => {
@@ -161,9 +169,7 @@ export function SectionQuizContent() {
     setFeedback(null);
     setAnsweredCount(0);
     setResults(null);
-    if (selectedTopic) {
-      fetchQuestions(selectedTopic);
-    }
+    setQuizState("configuring");
   };
 
   const handleChooseDifferentSection = () => {
@@ -224,6 +230,51 @@ export function SectionQuizContent() {
     );
   }
 
+  // Configuration Screen - Question Count Selection
+  if (quizState === "configuring" && selectedTopic) {
+    const selectedArea = EXAM_CONFIG.contentAreas.find((a) => a.id === selectedTopic);
+    const maxQuestions = selectedArea?.totalQuestions || 20;
+
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center">
+            <button
+              onClick={handleChooseDifferentSection}
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mr-4"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Section Quiz</h1>
+          </div>
+        </header>
+
+        <main className="max-w-lg mx-auto px-4 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              {selectedArea?.shortName}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {selectedArea?.name}
+            </p>
+
+            <QuestionCountSelector
+              value={questionCount}
+              onChange={setQuestionCount}
+              maxAvailable={maxQuestions}
+            />
+
+            <Button onClick={handleStartQuiz} className="w-full mt-6" size="lg">
+              Start Quiz
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   if (quizState === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -247,7 +298,7 @@ export function SectionQuizContent() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
           <div className="flex flex-col gap-3">
-            <Button onClick={() => selectedTopic && fetchQuestions(selectedTopic)}>Try Again</Button>
+            <Button onClick={() => selectedTopic && fetchQuestions(selectedTopic, questionCount)}>Try Again</Button>
             <Link href="/">
               <Button variant="ghost" className="w-full">Go Home</Button>
             </Link>

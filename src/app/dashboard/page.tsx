@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { ConfirmModal, AlertModal } from "@/components/ui/Modal";
 import { EXAM_CONFIG } from "@/lib/exam-config";
 
 interface DomainStats {
@@ -43,6 +44,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -72,14 +75,19 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteSession = async (sessionId: string) => {
-    if (!confirm("Delete this session? This will update your statistics.")) {
-      return;
-    }
+  const handleDeleteRequest = (sessionId: string) => {
+    setDeleteConfirmId(sessionId);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmId) return;
+
+    const sessionToDelete = deleteConfirmId;
+    setDeletingSessionId(sessionToDelete);
+    setDeleteConfirmId(null);
 
     try {
-      setDeletingSessionId(sessionId);
-      const response = await fetch(`/api/sessions/${sessionId}`, {
+      const response = await fetch(`/api/sessions/${sessionToDelete}`, {
         method: "DELETE",
       });
 
@@ -90,7 +98,7 @@ export default function DashboardPage() {
       // Refresh stats to reflect the deletion
       await fetchStats();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to delete session");
+      setAlertMessage(err instanceof Error ? err.message : "Failed to delete session");
     } finally {
       setDeletingSessionId(null);
     }
@@ -283,7 +291,7 @@ export default function DashboardPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => handleDeleteSession(sess.id)}
+                      onClick={() => handleDeleteRequest(sess.id)}
                       disabled={deletingSessionId === sess.id}
                       className="p-1.5 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors disabled:opacity-50"
                       title="Delete session"
@@ -307,7 +315,7 @@ export default function DashboardPage() {
         )}
 
         {/* Empty State */}
-        {stats && stats.totalQuestionsAnswered === 0 && (
+        {stats && stats.recentSessions.length === 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center mb-8">
             <svg
               className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4"
@@ -348,6 +356,27 @@ export default function DashboardPage() {
           </Link>
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Session"
+        message="Delete this session? This will update your statistics."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* Error Alert Modal */}
+      <AlertModal
+        isOpen={alertMessage !== null}
+        onClose={() => setAlertMessage(null)}
+        title="Error"
+        message={alertMessage || ""}
+        variant="error"
+      />
     </div>
   );
 }

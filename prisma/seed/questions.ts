@@ -10,6 +10,7 @@ interface ExtractedQuestion {
   options: { label: string; text: string }[];
   correct_answer: string;
   explanation: string;
+  flashcard_explanation?: string;
   chapter: string;
   section: string;
   topic: string;
@@ -66,6 +67,7 @@ export async function seedQuestions(forceReseed = false): Promise<void> {
     options: q.options,
     correctAnswer: q.correct_answer,
     explanation: q.explanation || "",
+    flashcardExplanation: q.flashcard_explanation || null,
     chapter: q.chapter,
     section: q.section || "",
     topic: q.topic,

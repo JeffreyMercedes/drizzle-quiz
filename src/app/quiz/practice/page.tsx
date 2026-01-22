@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { QuestionCard } from "@/components/quiz/QuestionCard";
 import { ProgressBar } from "@/components/quiz/ProgressBar";
 import { QuizResults } from "@/components/quiz/QuizResults";
+import { QuestionCountSelector } from "@/components/quiz/QuestionCountSelector";
 import { Button } from "@/components/ui/Button";
+import { QUIZ_MODES } from "@/lib/exam-config";
 
 interface Question {
   id: string;
@@ -31,13 +33,14 @@ interface QuizResult {
   byDomain: Record<string, { total: number; correct: number; percentage: number }>;
 }
 
-type QuizState = "loading" | "quiz" | "results" | "error";
+type QuizState = "setup" | "loading" | "quiz" | "results" | "error";
 
 export default function PracticeQuizPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [quizState, setQuizState] = useState<QuizState>("loading");
+  const [quizState, setQuizState] = useState<QuizState>("setup");
+  const [questionCount, setQuestionCount] = useState<number>(QUIZ_MODES.practice.defaultQuestionCount);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -45,7 +48,7 @@ export default function PracticeQuizPage() {
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [answeredCount, setAnsweredCount] = useState(0);
   const [results, setResults] = useState<QuizResult | null>(null);
-  const [startTime] = useState<number>(Date.now());
+  const [startTime, setStartTime] = useState<number>(Date.now());
   const [error, setError] = useState<string | null>(null);
 
   // Redirect if not authenticated
@@ -55,17 +58,11 @@ export default function PracticeQuizPage() {
     }
   }, [status, router]);
 
-  // Fetch questions on mount
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchQuestions();
-    }
-  }, [status]);
-
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (count: number) => {
     try {
       setQuizState("loading");
-      const response = await fetch("/api/quiz/practice");
+      setStartTime(Date.now());
+      const response = await fetch(`/api/quiz/practice?count=${count}`);
       if (!response.ok) {
         throw new Error("Failed to fetch questions");
       }
@@ -77,6 +74,10 @@ export default function PracticeQuizPage() {
       setError(err instanceof Error ? err.message : "Failed to load quiz");
       setQuizState("error");
     }
+  };
+
+  const handleStartQuiz = () => {
+    fetchQuestions(questionCount);
   };
 
   const handleSelectAnswer = (answer: string) => {
@@ -150,10 +151,56 @@ export default function PracticeQuizPage() {
     setFeedback(null);
     setAnsweredCount(0);
     setResults(null);
-    fetchQuestions();
+    setQuizState("setup");
   };
 
-  if (status === "loading" || quizState === "loading") {
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  // Setup Screen - Question Count Selection
+  if (quizState === "setup") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center">
+            <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mr-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </Link>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Practice Quiz</h1>
+          </div>
+        </header>
+
+        <main className="max-w-lg mx-auto px-4 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Configure Your Quiz
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Random questions from all content areas. Great for general review.
+            </p>
+
+            <QuestionCountSelector
+              value={questionCount}
+              onChange={setQuestionCount}
+            />
+
+            <Button onClick={handleStartQuiz} className="w-full mt-6" size="lg">
+              Start Quiz
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (quizState === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -176,7 +223,7 @@ export default function PracticeQuizPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
           <div className="flex flex-col gap-3">
-            <Button onClick={fetchQuestions}>Try Again</Button>
+            <Button onClick={() => fetchQuestions(questionCount)}>Try Again</Button>
             <Link href="/">
               <Button variant="ghost" className="w-full">Go Home</Button>
             </Link>

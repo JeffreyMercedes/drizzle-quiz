@@ -22,12 +22,13 @@ model User {
 }
 
 model Question {
-  id              String       @id @default(cuid())
-  questionText    String
-  options         Json         // [{label: "a", text: "..."}, ...]
-  correctAnswer   String       // a, b, c, or d
-  explanation     String       @db.Text
-  chapter         String
+  id                    String       @id @default(cuid())
+  questionText          String
+  options               Json         // [{label: "a", text: "..."}, ...]
+  correctAnswer         String       // a, b, c, or d
+  explanation           String       @db.Text
+  flashcardExplanation  String?      @db.Text // Alternative explanation for flashcards (no choice references)
+  chapter               String
   section         String       @default("")
   topic           String       // CPCE content area ID
   pageNumber      Int
