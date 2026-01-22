@@ -215,6 +215,7 @@ export default function FlashcardsPage() {
       <main className="max-w-lg mx-auto px-4 py-6">
         {currentCard && (
           <Flashcard
+            key={currentCard.id}
             front={currentCard.front}
             back={currentCard.back}
             explanation={currentCard.explanation}

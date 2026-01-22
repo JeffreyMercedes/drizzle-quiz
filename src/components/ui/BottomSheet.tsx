@@ -47,18 +47,18 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
 
       {/* Sheet */}
       <div
-        className="absolute bottom-0 left-0 right-0 max-h-[80vh] bg-white dark:bg-gray-800 rounded-t-2xl shadow-xl transform transition-transform animate-slide-up"
+        className="absolute bottom-0 left-0 right-0 min-h-[50vh] max-h-[85vh] bg-white dark:bg-gray-800 rounded-t-2xl shadow-xl animate-slide-up flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? "bottom-sheet-title" : undefined}
       >
         {/* Handle */}
-        <div className="flex justify-center pt-3 pb-2">
+        <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
           <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           {title && (
             <h2
               id="bottom-sheet-title"
@@ -89,7 +89,7 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
         </div>
 
         {/* Content */}
-        <div className="px-4 py-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+        <div className="px-4 py-4 overflow-y-auto flex-1">
           {children}
         </div>
       </div>
